@@ -106,5 +106,3 @@ impl Viewport {
         }
     }
 }
-
-///TODO! Create a ImageDataLayout and ImageRegion (section 2 of learning renderer)
