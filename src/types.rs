@@ -1,5 +1,6 @@
 use wgpu::*;
 
+#[derive(Debug, Clone, Copy)]
 struct Origin3d {
 
     x : u32,
@@ -32,6 +33,7 @@ impl From<Origin3d> for wgpu::Origin3d {
 
 }
 
+#[derive(Debug, Clone, Copy)]
 struct Extent3d {
 
     width : u32,
@@ -64,6 +66,7 @@ impl From<Extent3d> for wgpu::Extent3d {
 
 }
 
+#[derive(Debug, Clone, Copy)]
 struct Rect {
 
     x : u32,
@@ -85,6 +88,7 @@ impl Rect {
 
 }
 
+#[derive(Debug, Clone, Copy)]
 struct Viewport {
 
     x : f32,
@@ -114,8 +118,8 @@ struct ImageDataLayout {
 
 impl ImageDataLayout {
 
-    pub fn new_2d(offset : u64, bytes_per_row : Option<u32>) -> Self {
-        Self { offset, bytes_per_row, rows_per_image: None }
+    pub fn new_2d(width : u64, bytes_per_pixel : Option<u32>) -> Self {
+        Self { offset: width, bytes_per_row: None, rows_per_image: None }
     }
 
 }
