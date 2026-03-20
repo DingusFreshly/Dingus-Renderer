@@ -21,19 +21,6 @@ impl Origin3d {
         }
     }
 }
-
-impl From<Origin3d> for wgpu::Origin3d {
-
-    fn from(value: Origin3d) -> Self {
-        Self {
-            x: value.x,
-            y: value.y,
-            z: value.z
-        }
-    }
-
-}
-
 ///A 3d size.`depth_or_array_layers` is 1 for 2d textures, and N otherwise
 
 #[derive(Debug, Clone, Copy)]
@@ -54,14 +41,11 @@ impl Extent3d {
         }
 
     }
-}
-
-impl From<Extent3d> for wgpu::Extent3d {
-    fn from(value: Extent3d) -> Self {
-        Self {
-            width: value.width,
-            height: value.height,
-            depth_or_array_layers: value.depth_or_array_layers
+    pub fn to_wgpu(self) -> wgpu::Extent3d {
+        wgpu::Extent3d {
+            height: self.height,
+            width: self.width,
+            depth_or_array_layers: self.depth_or_array_layers
         }
     }
 }
