@@ -10,15 +10,16 @@ struct Origin3d {
 }
 
 impl Origin3d {
+    pub const ZERO: Origin3d = Origin3d {x:0,y:0,z:0};
+    pub fn new(x:u32,y:u32,z:u32) -> Origin3d { Origin3d {x,y,z} }
 
-    pub fn new(x : u32, y : u32, z : u32) -> Self {
-        Self { x, y, z }
+    pub fn into_wgpu(o:Origin3d) -> wgpu::Origin3d {
+        wgpu::Origin3d {
+            x: o.x,
+            y: o.y,
+            z: o.z
+        }
     }
-    
-    pub fn zero() -> Self {
-        Self { x: 0, y: 0, z: 0 }
-    }
-
 }
 
 impl From<Origin3d> for wgpu::Origin3d {
@@ -33,7 +34,6 @@ impl From<Origin3d> for wgpu::Origin3d {
 
 }
 
-#[derive(Debug, Clone, Copy)]
 struct Extent3d {
 
     width : u32,
@@ -41,11 +41,11 @@ struct Extent3d {
     depth : u32,
 
 }
-
 impl Extent3d {
-
-    pub fn new(width : u32, height : u32, depth : u32) -> Self {
-        Self { width, height, depth }
+    pub fn new(width : u32, height : u32, depth_or_array_layers : u32) -> Extent3d {
+        Self {
+            width, height, depth_or_array_layers
+        }
     }
 
     pub fn new_2d(width : u32, height : u32) -> Self {
@@ -66,7 +66,6 @@ impl From<Extent3d> for wgpu::Extent3d {
 
 }
 
-#[derive(Debug, Clone, Copy)]
 struct Rect {
 
     x : u32,
@@ -75,20 +74,26 @@ struct Rect {
     height : u32,
 
 }
-
 impl Rect {
-
     pub fn new(x : u32, y : u32, width : u32, height : u32) -> Self {
-        Self { x, y, width, height }
+        Self {
+            x,
+            y,
+            width,
+            height
+        }
     }
-
     pub fn full(width : u32, height : u32) -> Self {
-        Self { x: 0, y: 0, width, height }
+        Self {
+            x: 0,
+            y: 0,
+            width,
+            height
+        }
     }
 
 }
 
-#[derive(Debug, Clone, Copy)]
 struct Viewport {
 
     x : f32,
@@ -101,7 +106,7 @@ struct Viewport {
 }
 
 impl Viewport {
-
+    /// a viewport covering the full surface with depth range 0.0 - 1.0
     pub fn full(width : f32, height : f32) -> Self {
         Self { x: 0.0, y: 0.0, width, height, min_depth: 0.0, max_depth: 1.0 }
     }
@@ -118,8 +123,8 @@ struct ImageDataLayout {
 
 impl ImageDataLayout {
 
-    pub fn new_2d(width : u64, bytes_per_pixel : Option<u32>) -> Self {
-        Self { offset: width, bytes_per_row: None, rows_per_image: None }
+    pub fn new_2d(offset : u64, bytes_per_row : Option<u32>) -> Self {
+        Self { offset, bytes_per_row, rows_per_image: None }
     }
 
 }
@@ -142,5 +147,4 @@ impl ImageRegion {
     pub fn mip(mip_level : u32, width : u32, height : u32) -> Self {
         Self { mip_level, origin: Origin3d::zero(), extent: Extent3d::new_2d(width, height), array_layer: 0 }
     }
-
 }
