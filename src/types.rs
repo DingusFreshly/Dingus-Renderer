@@ -1,5 +1,8 @@
+use wgpu;
 ///A 3D integer coordinate used as an offset into a texture or buffer region.
 /// TODO! mark use cases for structs in this file
+
+#[derive(Debug, Clone, Copy)]
 pub struct Origin3d {
     x: u32,
     y: u32,
@@ -19,9 +22,21 @@ impl Origin3d {
     }
 }
 
+impl From<Origin3d> for wgpu::Origin3d {
+
+    fn from(value: Origin3d) -> Self {
+        Self {
+            x: value.x,
+            y: value.y,
+            z: value.z
+        }
+    }
+
+}
 
 ///A 3d size.`depth_or_array_layers` is 1 for 2d textures, and N otherwise
-///
+
+#[derive(Debug, Clone, Copy)]
 pub struct Extent3d {
     width: u32,
     height: u32,
@@ -40,8 +55,20 @@ impl Extent3d {
 
     }
 }
+
+impl From<Extent3d> for wgpu::Extent3d {
+    fn from(value: Extent3d) -> Self {
+        Self {
+            width: value.width,
+            height: value.height,
+            depth_or_array_layers: value.depth_or_array_layers
+        }
+    }
+}
+
 ///An integer 2d rectangle, used for scissor tests and copy regions
 /// *Scissor test*: only render to square cutout of screen, used for viewports
+#[derive(Debug, Clone, Copy)]
 pub struct Rect {
     x: u32,
     y: u32,
@@ -67,6 +94,7 @@ impl Rect {
     }
 }
 ///Floating point viewport with near and far depth range. Used to limit rendering to a sub region of the screen
+#[derive(Debug, Clone, Copy)]
 pub struct Viewport {
     x: f32,
     y: f32,
@@ -94,3 +122,5 @@ impl Viewport {
         }
     }
 }
+
+///TODO! Create a ImageDataLayout and ImageRegion (section 2 of learning renderer)
