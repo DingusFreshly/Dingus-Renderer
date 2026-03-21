@@ -1,7 +1,7 @@
 use wgpu;
 ///A 3D integer coordinate used as an offset into a texture or buffer region.
 /// TODO! mark use cases for structs in this file
-
+use std::convert::From;
 #[derive(Debug, Clone, Copy)]
 pub struct Origin3d {
     x: u32,
@@ -21,8 +21,17 @@ impl Origin3d {
         }
     }
 }
-///A 3d size.`depth_or_array_layers` is 1 for 2d textures, and N otherwise
+impl From<Origin3d> for wgpu::Origin3d {
+    fn from(o: Origin3d) -> Self {
+        wgpu::Origin3d {
+            x: o.x,
+            y: o.y,
+            z: o.z
+        }    
+    }
+}
 
+///A 3d size.`depth_or_array_layers` is 1 for 2d textures, and N otherwise
 #[derive(Debug, Clone, Copy)]
 pub struct Extent3d {
     width: u32,
@@ -46,6 +55,15 @@ impl Extent3d {
             height: self.height,
             width: self.width,
             depth_or_array_layers: self.depth_or_array_layers
+        }
+    }
+}
+impl From<Extent3d> for wgpu::Extent3d {
+    fn from(o: Extent3d) -> wgpu::Extent3d {
+        wgpu::Extent3d {
+            height: o.height,
+            width: o.width,
+            depth_or_array_layers: o.depth_or_array_layers
         }
     }
 }
@@ -106,3 +124,7 @@ impl Viewport {
         }
     }
 }
+
+//imageDataLayout
+//ImageRegion
+
