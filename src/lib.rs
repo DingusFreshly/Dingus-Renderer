@@ -1,6 +1,9 @@
 mod error;
 mod types;
 mod resources;
+mod desc;
+mod handle;
+mod slotmap;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right

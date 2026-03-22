@@ -1,5 +1,5 @@
 use std::marker::PhantomData;
-use crate::resources::handle::Handle;
+use crate::handle::Handle;
 use std::convert::{From, Into};
 ///One item in the slotmap
 struct Slot<V> {
