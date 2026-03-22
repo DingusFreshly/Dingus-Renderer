@@ -85,4 +85,28 @@ where K: From<Handle<V>> + Into<Handle<V>> + Copy
         
         value
     }
+    ///get all slots with a value by refeference
+    pub fn values(&self) -> impl Iterator<Item = &V> {
+
+        self.slots.iter().filter(|x| {
+            x.value.is_some()
+        }).map(|x| {
+            x.value.as_ref().unwrap()
+        })
+
+    }
+    ///get all slots with a value by mut reference
+    pub fn values_mut(&mut self) -> impl Iterator<Item = &mut V> {
+
+        self.slots.iter_mut().filter(|x| {
+            x.value.is_some()
+        }).map(|x| {
+            x.value.as_mut().unwrap()
+        })
+
+    }
+
+    pub fn len(&self) -> usize {
+        self.slots.len() - self.free.len()
+    }
 }
