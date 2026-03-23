@@ -2,6 +2,7 @@ use std::cmp::{max, max_by, min};
 use wgpu::{TextureFormat, TextureUsages, TextureDimension};
 
 ///Describes a texture on the gpu
+#[derive(Copy, Clone)]
 pub struct TextureDesc {
     
     label: Option<&'static str>,

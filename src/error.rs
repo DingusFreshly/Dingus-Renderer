@@ -1,5 +1,5 @@
 use thiserror::Error;
-use wgpu::{Backend, Features, RequestDeviceError, SurfaceError};
+use wgpu::{Backends, Features, RequestDeviceError, SurfaceError};
 use winit::window::WindowId;
 
 ///Everything that can go wrong with the renderer (hopefully)
@@ -9,8 +9,8 @@ pub enum RendererError {
     #[error("Surface error, swapchain failed to provide frame: {0}")]
     SurfaceError(#[from] SurfaceError),
 
-    #[error("No GPU found matching backends: {0}, choose different backends.")]
-    NoAdapter(Backend),
+    #[error("No GPU found matching backendd, choose different backends.")]
+    NoAdapter(Backends),
 
     #[error("GPU rejected device request : {0}, try requesting fewer features or limits.")]
     DeviceRequest(#[from] RequestDeviceError),

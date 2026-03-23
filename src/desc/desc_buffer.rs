@@ -3,7 +3,7 @@ use wgpu::{BufferDescriptor, BufferUsages};
 pub struct BufferDesc {
     label: Option<&'static str>,
     ///size in bytes, use `N * std::mem::size_of::<T>() as u64`
-    size : u64,
+    pub(crate) size : u64,
     ///VERTEX, INDEX, UNIFORM, STORAGE, INDIRECT, COPY_SRC, COPY_DST, MAP_READ
     usage: BufferUsages,
     ///if true, the buffer is CPU-writable immediately after creation

@@ -1,8 +1,9 @@
+use std::hash::{Hash, Hasher};
 use std::marker::PhantomData;
+use std::fmt;
 /// A handle to a wgpu resource, inside the swapchain
 /// Indexed by index and generation
 /// Type of handles:
-#[derive(Clone, Copy, PartialEq, Hash, Eq, Debug )]
 pub struct Handle<T> {
     pub(crate) slot_index: usize,
     pub(crate) generation: u32,
@@ -10,6 +11,30 @@ pub struct Handle<T> {
     //using T directly would require T to also be Send + Sync, ill make sure of this later
     _marker : PhantomData<fn() -> T>
 }
+///instead of deriving, we implement raw
+/// this is because deriving copy requires T to also be copy, which it is not
+/// this is safe because the only data the handle actually carries is copy compatible 
+impl<T> Copy  for Handle<T> {}
+impl<T> Clone for Handle<T> { fn clone(&self) -> Self { *self } }
+impl<T> Eq    for Handle<T> {}
+impl<T> PartialEq for Handle<T> {
+    fn eq(&self, o: &Self) -> bool {
+        self.slot_index == o.slot_index && self.generation == o.generation
+    }
+}
+impl<T> Hash for Handle<T> {
+    fn hash<H: Hasher>(&self, s: &mut H) {
+        self.slot_index.hash(s);
+        self.generation.hash(s);
+    }
+}
+impl<T> fmt::Debug for Handle<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Handle<{}>(slot={}, gen={})",
+               std::any::type_name::<T>(), self.slot_index, self.generation)
+    }
+}
+
 /// two integers with no interior mutability, so pretty sure this is safe
 unsafe impl<T> Sync for Handle<T> {}
 unsafe impl<T> Send for Handle<T> {}
@@ -46,12 +71,19 @@ impl<T> Handle<T> {
  }
 
 //TODO! Add type aliases for all wgpu resources
+pub mod aliases {
+    use crate::resources::prelude::*;
+    use super::Handle;
+    pub type TextureHandle    = Handle<Texture>;
+    pub type BufferHandle     = Handle<GpuBuffer>;
+    pub type PipelineHandle   = Handle<Pipeline>;
+    pub type MeshHandle       = Handle<Mesh>;
+    pub type SamplerHandle    = Handle<Sampler>;
+    pub type BindGroupHandle  = Handle<CachedBindGroup>;
+    pub type ShaderHandle     = Handle<ShaderModule>;
+
+
+}
 /*
-type TextureHandle    = Handle<Texture>
-type BufferHandle     = Handle<GpuBuffer>
-type PipelineHandle   = Handle<Pipeline>
-type MeshHandle       = Handle<Mesh>
-type SamplerHandle    = Handle<Sampler>
-type BindGroupHandle  = Handle<CachedBindGroup>
-type ShaderHandle     = Handle<ShaderModule>
+
 */

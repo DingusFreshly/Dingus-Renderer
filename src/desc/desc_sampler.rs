@@ -2,6 +2,7 @@ use wgpu::{AddressMode, FilterMode, MipmapFilterMode};
 use wgpu::AddressMode::ClampToEdge;
 
 ///describes how to read a texture
+#[derive(Clone, Copy, Debug)]
 pub struct SamplerDesc {
     label: Option<&'static str>,
     ///how textures edges should be handled on u, v, w

@@ -1,5 +1,5 @@
 use crate::desc::desc_vertex::VertexBufferLayout;
-#[derive(Hash)]
+#[derive(Hash, )]
 pub struct PipelineDesc<'a> {
     label: Option<&'a str>,
     shader: Option<&'a str>,

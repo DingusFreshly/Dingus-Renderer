@@ -24,7 +24,7 @@ impl From<&VertexAttribute> for wgpu::VertexAttribute {
 ///describes the layout of one vertex buffer, what attributes the vertex has and their locations
 #[derive(Hash)]
 pub struct VertexBufferLayout {
-    array_stride : u64,
+    pub(crate) array_stride : u64,
     step_mode: VertexStepMode,
     attributes: Vec<VertexAttribute>,
 }
