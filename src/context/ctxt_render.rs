@@ -1,8 +1,12 @@
 use std::sync::Arc;
+use wgpu::{Instance, PollError, PollStatus};
 use crate::error::RendererError;
+
+pub const POLL_WAIT_TIME : std::time::Duration = std::time::Duration::from_secs(5);
 
 /// The GPU device and queue, shared via Arc across all renderer subsystems.
 pub struct RenderContext {
+    pub instance: Instance,
     pub device:   wgpu::Device,
     pub queue:    wgpu::Queue,
     pub adapter:  wgpu::Adapter,
@@ -23,6 +27,7 @@ impl RenderContext {
         let adapter = instance
             .request_adapter(&wgpu::RequestAdapterOptions {
                 power_preference:       wgpu::PowerPreference::HighPerformance,
+                //TODO! create a temporary surface to satisfy this parameter so it works on WebGpu and phone targets
                 compatible_surface:     None,
                 force_fallback_adapter: false,
             })
@@ -48,9 +53,27 @@ impl RenderContext {
 
         log::info!("GPU: {:?} via {:?}", adapter.get_info().name, backend);
         
-        Ok(Arc::new(Self { device, queue, adapter, features, limits, backend }))
+        Ok(Arc::new(Self { instance, device, queue, adapter, features, limits, backend }))
     }
+    /// Submit commands to a one-shot encoder. Blocks until the GPU finishes
+    /// Used for initialization work (mip generation, initial uploads)
+    /// F takes in a command encoder, and can encode comamnds such as RenderPass, ComputePass, etc
+    pub fn submit_immediate<F: FnOnce(&mut wgpu::CommandEncoder)>(&self, f: F) -> Result<PollStatus, PollError> {
+        let mut enc = self.device.create_command_encoder(
+            //TODO! proper label
+            &wgpu::CommandEncoderDescriptor { label: Some("immediate") }
+        );
+        f(&mut enc);
+        //queue.submit takes in an iterator, but we only do it for one in this situation
+        let idx = self.queue.submit(std::iter::once(enc.finish()));
 
+        let wait_mode = wgpu::PollType::Wait {
+            submission_index: Some(idx),
+            timeout: Some(POLL_WAIT_TIME)
+        };
+
+        self.device.poll(wait_mode)
+    }
     pub fn supports(&self, f: wgpu::Features) -> bool { self.features.contains(f) }
     pub fn backend_name(&self) -> &'static str {
         match self.backend {

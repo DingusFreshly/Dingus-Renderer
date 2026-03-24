@@ -5,12 +5,12 @@ use wgpu::{TextureFormat, TextureUsages, TextureDimension};
 #[derive(Copy, Clone)]
 pub struct TextureDesc {
     
-    label: Option<&'static str>,
+    pub(crate) label: Option<&'static str>,
 
     ///texel width
-    width: u32,
+    pub(crate) width: u32,
     ///texel height
-    height: u32,
+    pub(crate) height: u32,
     /// If dimension == D3: 
     ///     This represents the 3d depth of the texture
     ///     Texture will be `width * height * depth_or_layers`
@@ -19,27 +19,27 @@ pub struct TextureDesc {
     ///     Will be `depth_or_layers` amount of `width * height` images
     ///     For a cube, this might be 6 because it has 6 texture faces
     ///     If `depth_or_layers == 1`, its just a normal 2D texture
-    depth_or_layers: u32,
+    pub(crate) depth_or_layers: u32,
     ///Mipmapping is a technique used for efficiently rendering far-away textures
     ///for each mip-map level, it creates a smaller texture that is N^0.5 smaller in resolution
     /// when the gpu wants to render a texture that has a smaller resolution than whats on the screen, 
     /// it calculates the pixel ratio and looks for the correct mip map level to use
     /// *more levels == more ram but better performance for far or small textures*
     /// mip_levels == 1 for no mipmap
-    mip_levels: u32,
+    pub(crate) mip_levels: u32,
     ///how the texture pixel data is stored in numbers
     /// https://docs.rs/wgpu/latest/wgpu/enum.TextureFormat.html
-    format: TextureFormat,
+    pub(crate) format: TextureFormat,
     ///https://docs.rs/wgpu/latest/wgpu/struct.TextureUsages.html
-    usage: TextureUsages,
+    pub(crate) usage: TextureUsages,
     ///D2 or D3
-    dimension: TextureDimension,
+    pub(crate) dimension: TextureDimension,
     ///levels for multi-sample anti aliasing
     /// - MSAA smoothes out jagged pixel corners by applying lighter colour pixels around.
     /// - controls the amount of samples per pixel stored.
     /// - increases memory usage, and improves image quality 
     /// - 1 to turn off
-    sample_count: u32,
+    pub(crate) sample_count: u32,
 }
 
 impl TextureDesc {

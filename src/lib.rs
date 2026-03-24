@@ -5,6 +5,7 @@ mod desc;
 mod handle;
 mod slotmap;
 mod context;
+mod registry;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
