@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use winit::window::WindowId;
-use crate::context::prelude::SurfaceContext;
+use crate::context::prelude::{RenderContext, SurfaceContext};
 use crate::error::RendererError;
 
 ///Stores all the surfaces in the app, maps window id to surface
@@ -15,16 +15,23 @@ impl SurfaceRegistry {
         }
     }
 
-    pub fn add(&mut self, id: WindowId, ctx: SurfaceContext, sample_count: u32) -> Result<(), RendererError> {
-        self.surfaces.insert(id, ctx).ok_or_else(|| {
-            RendererError::InvalidWindow(id)
-        });
-
-        Ok(())
+    pub fn add(&mut self, id: WindowId, ctx: SurfaceContext, sample_count: u32) -> Result<SurfaceContext, RendererError> {
+        self.surfaces.insert(id, ctx).ok_or_else(|| { RendererError::InvalidWindow(id) })
     }
 
     pub fn remove(&mut self, id : WindowId) -> Result<SurfaceContext, RendererError> {
-        let surf = self.surfaces.remove(&id).ok_or_else(|| {RendererError::InvalidWindow(id)}).unwrap();
-        Ok(surf)
+        self.surfaces.remove(&id).ok_or_else(|| {RendererError::InvalidWindow(id)})
     }
+
+    pub fn resize(&mut self, id: WindowId, ctx: &RenderContext, w: u32, h: u32) -> Result<(), RendererError> {
+        if let Some(s) = self.surfaces.get_mut(&id) { s.resize(ctx, w, h); }
+        else {
+            return Err(RendererError::InvalidWindow(id));
+        }
+        Ok(())
+    }
+    pub fn get(&self, id: WindowId)         -> Option<&SurfaceContext>    { self.surfaces.get(&id) }
+    pub fn get_mut(&mut self, id: WindowId) -> Option<&mut SurfaceContext>{ self.surfaces.get_mut(&id) }
+    pub fn contains(&self, id: WindowId)    -> bool                       { self.surfaces.contains_key(&id) }
+    pub fn iter_window_ids(&self)                -> impl Iterator<Item = WindowId> + '_ { self.surfaces.keys().copied() }
 }
