@@ -101,7 +101,7 @@ impl Pass for GeometryPass {
         //TODO! Make this more orgasmic.
         let layer_mask  = 0xFF_u64 << 56;
         let layer_bits  = SortKeyBuilder::new().layer(self.layer).build();
-        //let mut current_pipeline = None;
+        let mut current_pipeline = None;
 
         // Commands are already sorted by sort_key, just filter for this layer.
         for cmd in ctx.commands {
@@ -111,6 +111,71 @@ impl Pass for GeometryPass {
                 _ => continue,
             };
             if (sort_key & layer_mask) != layer_bits { continue; }
+
+            match cmd {
+                RenderCommand::Draw(call) => {
+                    if current_pipeline != Some(call.pipeline) {
+                        if let Some(p) = ctx.resources.get_pipeline(call.pipeline)
+                            .and_then(|p| p.as_render())
+                        {
+                            render_pass.set_pipeline(p);
+                            current_pipeline = Some(call.pipeline);
+                        }
+                    }
+                    for (i, &bg) in call.bind_groups.iter().enumerate() {
+                        if let Some(b) = ctx.resources.get_bind_group(bg) {
+                            render_pass.set_bind_group(i as u32, &b.bind_group, &[]);
+                        }
+                    }
+                    //TODO! replace push constants with immediates:
+                    /*
+                    if call.push_constants.iter().any(|&b| b != 0) {
+                        render_pass.set_immediates(0, );
+                    }
+                     */
+                    
+                    if let Some(mesh) = ctx.resources.get_mesh(call.mesh) {
+                        if let Some(s) = call.scissor {
+                            render_pass.set_scissor_rect(s.x, s.y, s.width, s.height);
+                        }
+                        render_pass.set_vertex_buffer(0, mesh.vertex_buffer.slice(..));
+                        match &mesh.index_buffer {
+                            Some(ib) => {
+                                render_pass.set_index_buffer(ib.slice(..), mesh.index_format.unwrap());
+                                render_pass.draw_indexed(0..mesh.element_count, 0, call.instances.clone());
+                            }
+                            None => render_pass.draw(0..mesh.element_count, call.instances.clone()),
+                        }
+                    }
+                }
+
+                RenderCommand::DrawIndirect {
+                    pipeline, mesh, bind_groups, push_constants,
+                    indirect_buffer, indirect_offset, draw_count, ..
+                } => {
+                    if current_pipeline != Some(*pipeline) {
+                        if let Some(p) = ctx.resources.get_pipeline(*pipeline)
+                            .and_then(|p| p.as_render())
+                        {
+                            render_pass.set_pipeline(p);
+                            current_pipeline = Some(*pipeline);
+                        }
+                    }
+                    for (i, &bg) in bind_groups.iter().enumerate() {
+                        if let Some(b) = ctx.resources.get_bind_group(bg) {
+                            render_pass.set_bind_group(i as u32, &b.bind_group, &[]);
+                        }
+                    }
+                    if let (Some(ind), Some(mesh)) = (
+                        ctx.resources.get_buffer(*indirect_buffer),
+                        ctx.resources.get_mesh(*mesh),
+                    ) {
+                        render_pass.set_vertex_buffer(0, mesh.vertex_buffer.slice(..));
+                        render_pass.multi_draw_indirect(&ind.buffer, *indirect_offset, *draw_count);
+                    }
+                }
+                _ => {}
+            }
         }
     }
 }

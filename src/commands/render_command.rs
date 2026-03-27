@@ -42,14 +42,14 @@ pub enum RenderCommand {
 }
 //TODO! impl default
 pub struct DrawCall {
-    pipeline: PipelineHandle,
-    mesh: MeshHandle,
-    bind_groups: Vec<BindGroupHandle>,//TODO! make smallvec with size 4
-    push_constants: [u8; 128],
-    instances: Range<u32>,
+    pub(crate) pipeline: PipelineHandle,
+    pub(crate) mesh: MeshHandle,
+    pub(crate) bind_groups: Vec<BindGroupHandle>,//TODO! make smallvec with size 4
+    pub(crate) push_constants: [u8; 128],
+    pub(crate) instances: Range<u32>,
     window: WindowId,
     pub(crate) sort_key: SortKey,
-    scissor: Option<Rect>
+    pub(crate) scissor: Option<Rect>
 }
 
 impl DrawCall {

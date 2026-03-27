@@ -33,7 +33,7 @@ impl Camera {
         cam.update();
         cam
     }
-    /// Recompute all matrices. Call once per frame before submitting draw calls.
+    /// Recompute all matrices, call once per frame before submitting draw calls
     pub fn update(&mut self) {
         let view = self.transform.view_matrix();
         let proj = self.projection.projection_matrix();
@@ -59,7 +59,7 @@ impl Camera {
     pub fn bind_group(&self) -> BindGroupHandle { self.gpu_bind_group }
     pub fn buffer(&self)     -> BufferHandle    { self.gpu_buffer }
 
-    /// Update aspect and pixel dimensions, Call when the window is resized.
+    /// Update aspect radtio and pixel dimensions, Call when the window is resized.
     pub fn set_surface_size(&mut self, w: u32, h: u32) {
         self.projection.set_aspect(w as f32 / h.max(1) as f32);
         self.uniform.width  = w as f32;

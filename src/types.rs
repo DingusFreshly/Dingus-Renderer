@@ -72,10 +72,10 @@ impl From<Extent3d> for wgpu::Extent3d {
 /// *Scissor test*: only render to square cutout of screen, used for viewports
 #[derive(Debug, Clone, Copy)]
 pub struct Rect {
-    x: u32,
-    y: u32,
-    width: u32,
-    height: u32
+    pub(crate) x: u32,
+    pub(crate) y: u32,
+    pub(crate) width: u32,
+    pub(crate) height: u32
 }
 impl Rect {
     pub fn new(x : u32, y : u32, width : u32, height : u32) -> Self {
