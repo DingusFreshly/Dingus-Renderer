@@ -1,8 +1,7 @@
-mod ctxt_render;
+mod ctx_render;
 mod ctx_surface;
+mod ctx_pass;
 
-pub mod prelude {
-    pub use super::*;
-    pub use ctx_surface::*;
-    pub use ctxt_render::*;
-}
+pub use ctx_surface::*;
+pub use ctx_render::*;
+pub use ctx_pass::*;

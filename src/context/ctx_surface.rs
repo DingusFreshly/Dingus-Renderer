@@ -1,7 +1,7 @@
 use wgpu::{SurfaceCapabilities, SurfaceConfiguration};
 use crate::resources::prelude::Texture;
 use winit::window::{Window, WindowId};
-use crate::context::ctxt_render::RenderContext;
+use crate::context::ctx_render::RenderContext;
 use std::sync::Arc;
 use crate::desc::prelude::TextureDesc;
 use crate::error::RendererError;

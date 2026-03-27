@@ -24,20 +24,23 @@ pub enum SortKeyBitMap {
     PassLayer = 56
 }
 
+
 /// 64-bit sort key bit layout:
 ///
 ///  [63..56] PassLayer   (8  bits) : rendering phase
 ///  [55..40] Pipeline ID (16 bits) : minimise pipeline state changes
 ///  [39..24] Material Hash    (16 bits) : minimise bind group changes
 ///  [23..0 ] Depth       (24 bits) : front-to-back or back-to-front
-pub struct SortKey;
+pub type SortKey = u64;
 
 
 
 pub struct SortKeyBuilder {
     key: u64,
 }
+
 impl SortKeyBuilder {
+    pub fn new() -> Self {Self {key: 0}}
     pub fn layer(mut self, layer: PassLayer) -> Self {
         self.key = (self.key & 0x00FF_FFFF_FFFF_FFFF) | ((layer as u64) << SortKeyBitMap::PassLayer as u64);
         self
@@ -68,5 +71,5 @@ impl SortKeyBuilder {
         self
     }
 
-    pub fn build(self) -> u64 { self.key }
+    pub fn build(self) -> SortKey { self.key }
 }

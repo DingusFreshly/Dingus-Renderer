@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use winit::window::WindowId;
-use crate::context::prelude::{RenderContext, SurfaceContext};
+use crate::context::{RenderContext, SurfaceContext};
 use crate::error::RendererError;
 
 ///Stores all the surfaces in the app, maps window id to surface

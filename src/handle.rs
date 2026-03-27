@@ -1,6 +1,7 @@
 use std::hash::{Hash, Hasher};
 use std::marker::PhantomData;
 use std::fmt;
+
 /// A handle to a wgpu resource, inside the swapchain
 /// Indexed by index and generation
 /// Type of handles:
@@ -82,7 +83,9 @@ pub mod aliases {
     pub type BindGroupHandle  = Handle<CachedBindGroup>;
     pub type ShaderHandle     = Handle<ShaderModule>;
 
-
+    /// Built-in fullscreen triangle mesh. No vertex buffer needed; clip-space
+    /// positions are generated in the vertex shader from `vertex_index`.
+    pub const FULLSCREEN_MESH: MeshHandle = MeshHandle::builtin(0);
 }
 /*
 

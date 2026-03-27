@@ -8,6 +8,9 @@ mod context;
 mod registry;
 mod sort_key;
 mod commands;
+mod graph;
+mod camera;
+mod pass;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
