@@ -1,3 +1,4 @@
+use log::error;
 use crate::commands::prelude::RenderCommand;
 use crate::context::PassContext;
 use crate::graph::{Pass, PassAttachment};
@@ -115,6 +116,7 @@ impl Pass for GeometryPass {
             match cmd {
                 RenderCommand::Draw(call) => {
                     if current_pipeline != Some(call.pipeline) {
+                        //TODO! throw rendere rror if handle is invalid
                         if let Some(p) = ctx.resources.get_pipeline(call.pipeline)
                             .and_then(|p| p.as_render())
                         {
@@ -122,6 +124,7 @@ impl Pass for GeometryPass {
                             current_pipeline = Some(call.pipeline);
                         }
                     }
+                    //initialize bind groups
                     for (i, &bg) in call.bind_groups.iter().enumerate() {
                         if let Some(b) = ctx.resources.get_bind_group(bg) {
                             render_pass.set_bind_group(i as u32, &b.bind_group, &[]);
@@ -133,12 +136,14 @@ impl Pass for GeometryPass {
                         render_pass.set_immediates(0, );
                     }
                      */
-                    
+
                     if let Some(mesh) = ctx.resources.get_mesh(call.mesh) {
                         if let Some(s) = call.scissor {
+                            // only render to part of screen
                             render_pass.set_scissor_rect(s.x, s.y, s.width, s.height);
                         }
                         render_pass.set_vertex_buffer(0, mesh.vertex_buffer.slice(..));
+                        //if there is an index buffer, use that to draw else unindexed
                         match &mesh.index_buffer {
                             Some(ib) => {
                                 render_pass.set_index_buffer(ib.slice(..), mesh.index_format.unwrap());
