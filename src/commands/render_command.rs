@@ -15,36 +15,36 @@ use winit::dpi::Size;
 pub enum RenderCommand {
     Draw(DrawCall),
     DrawIndirect {
-        pipeline: PipelineHandle,
-        mesh: MeshHandle,
-        bind_groups: SmallVec<BindGroupHandle, 4>,//TODO! make smallvec with size 4
+        pipeline:       PipelineHandle,
+        mesh:           MeshHandle,
+        bind_groups:    SmallVec<BindGroupHandle, 4>,//TODO! make smallvec with size 4
         push_constants: [u8; 128],
         /// Buffer containing DrawIndirectArgs structs packed sequentially.
         indirect_buffer: BufferHandle,
         indirect_offset: u64,
-        draw_count: u32,
-        window: WindowId,
-        sort_key: SortKey,
+        draw_count:      u32,
+        window:          WindowId,
+        sort_key:        SortKey,
     },
 
     WriteTexture {
         handle: TextureHandle,
-        data: Vec<u8>,
+        data:   Vec<u8>,
         layout: TextureDesc,
         region: Rect
     },
     WriteBuffer {
         handle: BufferHandle,
         offset: u64,
-        data: Vec<u8>
+        data:   Vec<u8>
     },
 
     Compute(ComputeCall),
 
     ComputeIndirect {
-        pipeline: PipelineHandle,
-        bind_groups: SmallVec<BindGroupHandle, 4>,
-        push_constants: [u8; 128],
+        pipeline:        PipelineHandle,
+        bind_groups:     SmallVec<BindGroupHandle, 4>,
+        push_constants:  [u8; 128],
         /// Buffer containing one DispatchIndirectArgs { x, y, z: u32 }.
         indirect_buffer: BufferHandle,
         indirect_offset: u64,
@@ -60,14 +60,14 @@ pub enum RenderCommand {
 }
 //TODO! impl default
 pub struct DrawCall {
-    pub(crate) pipeline: PipelineHandle,
-    pub(crate) mesh: MeshHandle,
-    pub(crate) bind_groups: Vec<BindGroupHandle>,//TODO! make smallvec with size 4
-    pub(crate) push_constants: [u8; 128],
-    pub(crate) instances: Range<u32>,
-    window: WindowId,
-    pub(crate) sort_key: SortKey,
-    pub(crate) scissor: Option<Rect>
+    pub(crate) pipeline:        PipelineHandle,
+    pub(crate) mesh:            MeshHandle,
+    pub(crate) bind_groups:     Vec<BindGroupHandle>,//TODO! make smallvec with size 4
+    pub(crate) push_constants:  [u8; 128],
+    pub(crate) instances:       Range<u32>,
+    window:                     WindowId,
+    pub(crate) sort_key:        SortKey,
+    pub(crate) scissor:         Option<Rect>
 }
 
 impl DrawCall {
@@ -87,14 +87,14 @@ impl DrawCall {
 impl Default for DrawCall {
     fn default() -> Self {
         Self {
-            pipeline: Handle::null(),
-            mesh: FULLSCREEN_MESH,
-            bind_groups: Vec::new(),
+            pipeline:       Handle::null(),
+            mesh:           FULLSCREEN_MESH,
+            bind_groups:    Vec::new(),
             push_constants: [0; 128],
-            instances: 0..1,
-            sort_key: 0,
-            window: WindowId::dummy(),
-            scissor: None
+            instances:      0..1,
+            sort_key:       0,
+            window:         WindowId::dummy(),
+            scissor:        None
         }
     }
 }

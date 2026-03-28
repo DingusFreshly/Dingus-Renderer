@@ -1,7 +1,7 @@
 use wgpu::{CommandEncoder, Device, Queue};
 use crate::commands::prelude::RenderCommand;
 use crate::context::SurfaceContext;
-use crate::registry::res_registry::ResourceRegistry;
+use crate::registry::ResourceRegistry;
 
 /// Given to each pass during execution. Includes everything needed to record GPU commands.
 pub struct PassContext<'a> {

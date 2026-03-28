@@ -4,7 +4,7 @@ use crate::commands::prelude::RenderCommand;
 use crate::context::{PassContext, SurfaceContext};
 use crate::error::RendererError;
 use crate::graph::Pass;
-use crate::registry::res_registry::ResourceRegistry;
+use crate::registry::ResourceRegistry;
 
 /// Provides api to sort the command queue, and to flush
 pub struct RenderGraph {

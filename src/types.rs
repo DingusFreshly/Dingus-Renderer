@@ -2,6 +2,8 @@ use wgpu;
 ///A 3D integer coordinate used as an offset into a texture or buffer region.
 /// TODO! mark use cases for structs in this file
 use std::convert::From;
+use crate::commands::prelude::RenderCommand;
+
 #[derive(Debug, Clone, Copy)]
 pub struct Origin3d {
     x: u32,
@@ -179,11 +181,13 @@ impl ImageRegion {
     pub fn mip(mip_level: u32, width: u32, height: u32) -> Self {
         let mw = (width  >> mip_level).max(1);
         let mh = (height >> mip_level).max(1);
+
         Self {
             mip_level,
             origin: Origin3d::ZERO,
             array_layer: 0,
             extent: Extent3d::new_2d(mw, mh),
+
         }
     }
 
