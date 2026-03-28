@@ -111,7 +111,7 @@ pub struct ComputeCall {
 
 impl ComputeCall {
 
-    pub fn with_push_constants<T: Pod>(&self, value: &T) -> Self {
+    pub fn with_push_constants<T: Pod>(self, value: &T) -> Self {
 
         let bytes =bytemuck::bytes_of(value);
         let n = bytes.len();
@@ -127,7 +127,7 @@ impl ComputeCall {
     fn dispatch_for(n: u32, workgroup_size: u32) -> [u32; 3] {
 
         let workgroups = n.div_ceil(workgroup_size);
-        (workgroups, 1, 1)
+        [workgroups, 1, 1]
 
     }
 
@@ -135,7 +135,7 @@ impl ComputeCall {
 
         let workgroups_x = w.div_ceil(wx);
         let workgroups_y = h.div_ceil(wy);
-        (workgroups_x, workgroups_y, 1)
+        [workgroups_x, workgroups_y, 1]
 
     }
 
