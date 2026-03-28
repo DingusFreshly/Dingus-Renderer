@@ -34,7 +34,7 @@ impl RenderContext {
             .await
             .map_err(|x| RendererError::NoAdapter(backends))?;
 
-        let features = adapter.features();
+        let features = adapter.features() ;//| wgpu::Features::IMMEDIATES;
         let limits = adapter.limits();
         let backend = adapter.get_info().backend;
 
@@ -43,7 +43,7 @@ impl RenderContext {
                 &wgpu::DeviceDescriptor {
                     //TODO! label properly
                     label:             Some("renderer_device"),
-                    required_features: features,
+                    required_features: features ,
                     required_limits:   limits.clone(),
                     memory_hints:      wgpu::MemoryHints::Performance,
                     ..Default::default()

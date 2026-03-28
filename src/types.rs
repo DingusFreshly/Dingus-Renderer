@@ -125,6 +125,75 @@ impl Viewport {
     }
 }
 
-//imageDataLayout
-//ImageRegion
+/// CPU-side memory layout of image pixels for a GPU upload.
+/// `bytes_per_row` must be a multiple of 256 (wgpu requirement).
+#[derive(Copy, Clone, Debug)]
+pub struct ImageDataLayout {
+    pub offset:         u64,
+    pub bytes_per_row:  Option<u32>,
+    pub rows_per_image: Option<u32>,
+}
 
+impl ImageDataLayout {
+    /// Compute a standard 2D layout, padding bytes_per_row to a 256-byte multiple.
+    pub fn for_2d(width: u32, bytes_per_pixel: u32) -> Self {
+        let unpadded = width * bytes_per_pixel;
+        let padded   = (unpadded + 255) & !255;
+        Self { offset: 0, bytes_per_row: Some(padded), rows_per_image: None }
+    }
+}
+
+impl From<ImageDataLayout> for wgpu::TexelCopyBufferLayout {
+    fn from(l: ImageDataLayout) -> Self {
+        Self {
+            offset:         l.offset,
+            bytes_per_row:  l.bytes_per_row,
+            rows_per_image: l.rows_per_image,
+        }
+    }
+}
+/// Specifies which subregion of a texture to read from or write to.
+#[derive(Copy, Clone, Debug)]
+pub struct ImageRegion {
+    /// 0 is the base (largest) mip level.
+    pub mip_level:   u32,
+    /// Pixel offset within the mip level.
+    pub origin:      Origin3d,
+    /// Which array layer or cube face.
+    pub array_layer: u32,
+    pub extent:      Extent3d,
+}
+
+impl ImageRegion {
+    /// Full base-mip region of a 2D texture.
+    pub fn full(width: u32, height: u32) -> Self {
+        Self {
+            mip_level: 0,
+            origin: Origin3d::ZERO,
+            array_layer: 0,
+            extent: Extent3d::new_2d(width, height),
+        }
+    }
+
+    /// Specific mip level; auto-computes the mip-adjusted size.
+    pub fn mip(mip_level: u32, width: u32, height: u32) -> Self {
+        let mw = (width  >> mip_level).max(1);
+        let mh = (height >> mip_level).max(1);
+        Self {
+            mip_level,
+            origin: Origin3d::ZERO,
+            array_layer: 0,
+            extent: Extent3d::new_2d(mw, mh),
+        }
+    }
+
+    /// Convert to `wgpu::ImageCopyTexture` for encoder commands.
+    pub fn to_image_copy<'a>(&self, texture: &'a wgpu::Texture) -> wgpu::TexelCopyTextureInfo<'a> {
+        wgpu::TexelCopyTextureInfo {
+            texture,
+            mip_level: self.mip_level,
+            origin:    self.origin.into(),
+            aspect:    wgpu::TextureAspect::All,
+        }
+    }
+}
