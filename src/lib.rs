@@ -5,7 +5,7 @@ mod desc;
 mod handle;
 mod slotmap;
 mod context;
-mod registry;
+
 mod sort_key;
 mod commands;
 mod graph;
@@ -13,6 +13,7 @@ mod camera;
 mod pass;
 mod debug;
 mod renderer;
+mod memory;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
