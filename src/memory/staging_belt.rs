@@ -5,7 +5,7 @@ use crate::desc::prelude::TextureDesc;
 use crate::handle::aliases::BufferHandle;
 use crate::resources::prelude::PipelineKind::Render;
 
-struct StagingBelt<'a> {
+pub struct StagingBelt<'a> {
 
     device: &'a Device,
     inner : wgpu::util::StagingBelt,

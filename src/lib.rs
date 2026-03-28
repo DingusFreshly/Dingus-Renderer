@@ -14,6 +14,7 @@ mod pass;
 mod debug;
 mod renderer;
 mod memory;
+mod registry;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right

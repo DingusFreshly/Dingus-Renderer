@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use wgpu::{Buffer, BufferDescriptor, BufferUsages, Device, Label};
 use crate::desc::prelude::BufferDesc;
 
-struct BufferPool {
+pub struct BufferPool {
 
     //Indexed by Powers of 2 sizes ex: 2, 4, 8 are indexs.
     classes: HashMap<u64, Vec<wgpu::Buffer>>,
@@ -19,7 +19,7 @@ impl BufferPool {
     }
 
     ///adjust a pre-existing size to a pow of 2 size, always round up
-    fn size_classes(size: u64) -> u64 {
+    pub fn size_classes(size: u64) -> u64 {
 
         if (size == 0) { return 1; } else {
 
@@ -30,7 +30,7 @@ impl BufferPool {
     }
 
     ///either create or reuse a previous made buffer in the buffer list based off size
-    pub fn aquire(&mut self, min_size: u64, device: Device, label: Option<& str>) -> Buffer {
+    pub fn acquire(&mut self, min_size: u64, device: Device, label: Option<& str>) -> Buffer {
 
         let size = Self::size_classes(min_size);
         let matched = self.classes.entry(size).or_insert_with(Vec::new);
