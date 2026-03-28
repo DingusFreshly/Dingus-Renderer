@@ -5,9 +5,9 @@ use winit::window::WindowId;
 use crate::desc::prelude::TextureDesc;
 use crate::handle::aliases::{BindGroupHandle, BufferHandle, MeshHandle, PipelineHandle, TextureHandle, FULLSCREEN_MESH};
 use crate::handle::Handle;
-use crate::resources::prelude::PipelineKind;
+use crate::resources::prelude::{Pipeline, PipelineKind};
 use crate::sort_key::SortKey;
-use crate::types::Rect;
+use crate::types::{ImageDataLayout, ImageRegion, Rect};
 use smallvec::SmallVec;
 use winit::dpi::Size;
 
@@ -37,8 +37,26 @@ pub enum RenderCommand {
         handle: BufferHandle,
         offset: u64,
         data: Vec<u8>
-    }
+    },
 
+    Compute(ComputeCall),
+
+    ComputeIndirect {
+        pipeline: PipelineHandle,
+        bind_groups: SmallVec<BindGroupHandle, 4>,
+        push_constants: [u8; 128],
+        /// Buffer containing one DispatchIndirectArgs { x, y, z: u32 }.
+        indirect_buffer: BufferHandle,
+        indirect_offset: u64,
+        label:           Option<&'static str>,
+    },
+
+    CopyBufferToTexture {
+        buffer:  BufferHandle,
+        texture: TextureHandle,
+        layout:  ImageDataLayout,
+        region:  ImageRegion,
+    },
 }
 //TODO! impl default
 pub struct DrawCall {
@@ -79,4 +97,8 @@ impl Default for DrawCall {
             scissor: None
         }
     }
+}
+
+pub struct ComputeCall {
+
 }
