@@ -101,4 +101,42 @@ impl Default for DrawCall {
 
 pub struct ComputeCall {
 
+    pub(crate) pipeline: PipelineHandle,
+    pub(crate) bind_groups: SmallVec<BindGroupHandle, 4>,
+    pub(crate) push_constants: [u8; 128],
+    pub(crate) dispatch: [u32; 3],
+    pub(crate) label: Option<&'static str>,
+
+}
+
+impl ComputeCall {
+    const PUSH_CONSTANT_BYTE_SIZE : usize = 128;
+
+    pub fn with_push_constants<T: Pod>(mut self, value: &T) -> Self {
+
+        let bytes =bytemuck::bytes_of(value);
+        let n = bytes.len();
+        if n > Self::PUSH_CONSTANT_BYTE_SIZE {
+            warn!("Push constant exceeded {} bytes! Truncation will occur.", Self::PUSH_CONSTANT_BYTE_SIZE)
+        }
+        self.push_constants[..n].copy_from_slice(&bytes[..n]);
+
+        self
+    }
+
+    fn dispatch_for(n: u32, workgroup_size: u32) -> [u32; 3] {
+
+        let workgroups = n.div_ceil(workgroup_size);
+        [workgroups, 1, 1]
+
+    }
+
+    fn dispatch_2d(w: u32, h: u32, wx: u32, wy: u32) -> [u32; 3] {
+
+        let workgroups_x = w.div_ceil(wx);
+        let workgroups_y = h.div_ceil(wy);
+        [workgroups_x, workgroups_y, 1]
+    
+    }
+
 }
